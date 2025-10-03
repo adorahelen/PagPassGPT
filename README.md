@@ -57,12 +57,25 @@ nohup sh ./scripts/preprocess.sh > preprocess.log 2>&1 &
 ### 2.2 PagPassGPT 훈련
 
 훈련을 시작하고, 터미널 세션이 끊어져도 작업이 유지되도록 **백그라운드에서 실행**하며 로그를 기록합니다.
+- export CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6 등으로 그레픽 카드 지정 (default 전부)
+
+<img width="649" height="629" alt="image" src="https://github.com/user-attachments/assets/a2c68f04-c7c3-4831-86ed-6efab67d769d" />
+
+- $watch nvidia-smi (실시간), nvidia-smi (단편)
 
 ```shell
 nohup sh ./scripts/train.sh > train.log 2>&1 &
 ```
 
 *Note: 훈련 중 발생하는 모든 출력은 **`train.log`** 파일에 기록됩니다.*
+
+#### [모델 아키텍처 및 설정]
+- 모델 종류: GPT2LMHeadModel (GPT-2 기반 언어 모델) 로드
+- 파라미터 수: 총 21,358,464개 (약 2,136만 개)의 파라미터를 가진 경량화된 모델
+- 주요 구조: 12개 트랜스포머 블록, 은닉 차원 384로 구성
+
+#### [실행 및 진행 상태]
+- 총 단계: 전체 훈련은 77,730 스텝으로 계획 (28시간 소요 예상)
 
 ### 2.3 암호 생성
 
