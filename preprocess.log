@@ -1,0 +1,11 @@
+nohup: ignoring input
+Clean dataset begin.
+Total num=14344328
+Retain num=13265314
+Retain rate:0.9247776542756133
+Clean dataset done.
+Split begin.
+Shuffling passwords.
+Saving 80% (10612251) of dataset for training in ./dataset/rockyou-cleaned-Train.txt
+Saving 20% (2653063) of dataset for test in ./dataset/rockyou-cleaned-Test.txt
+Split done.
