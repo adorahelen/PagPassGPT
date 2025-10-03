@@ -26,36 +26,49 @@ pip install -r requirements.txt
 <!-- end list -->
 
 ```shell
-sh ./scripts/preprocess.sh
+nohup sh ./scripts/preprocess.sh > preprocess.log 2>&1 &
 ```
+*Note: 전처리 중 발생하는 모든 출력은 **`preprocess.log`** 파일에 기록됩니다.*
 
 *Note: **"RockYou"** 데이터셋 [다운로드 링크](https://www.google.com/url?sa=i&url=https%3A%2F%2Fgithub.com%2Fbrannondorsey%2Fnaive-hashcat%2Freleases%2Fdownload%2Fdata%2Frockyou.txt&psig=AOvVaw3rovncwk_ZO-AVgMK56N5-&ust=1734701481601000&source=images&cd=vfe&opi=89978449&ved=0CAYQrpoMahcKEwiwiazf-LOKAxUAAAAAHQAAAAAQBA)가 여기에 있습니다.*
 
 ### 2.2 PagPassGPT 훈련
 
-`train.sh` 스크립트를 실행하여 훈련합니다.
+훈련을 시작하고, 터미널 세션이 끊어져도 작업이 유지되도록 **백그라운드에서 실행**하며 로그를 기록합니다.
 
 ```shell
-sh ./scripts/train.sh
+nohup sh ./scripts/train.sh > train.log 2>&1 &
 ```
+
+*Note: 훈련 중 발생하는 모든 출력은 **`train.log`** 파일에 기록됩니다.*
 
 ### 2.3 암호 생성
 
-`generate.sh` 스크립트를 실행하여 암호를 생성합니다.
+암호를 생성하고, 터미널 세션이 끊어져도 작업이 유지되도록 **백그라운드에서 실행**하며 로그를 기록합니다.
 
 ```shell
-sh ./scripts/generate.sh
+nohup sh ./scripts/generate.sh > generate.log 2>&1 &
 ```
 
-*Note: 이 셸에서 단 한 줄만 변경하여 **D\&C-GEN** 사용 여부를 선택할 수 있습니다.*
+*Note: 이 셸에서 단 한 줄만 변경하여 **D\&C-GEN** 사용 여부를 선택할 수 있습니다. 생성 과정의 출력은 **`generate.log`** 파일을 확인하세요.*
 
 ### 2.4 암호 평가
 
+암호 평가를 실행하고, 터미널 세션이 끊어져도 작업이 유지되도록 **백그라운드에서 실행**하며 로그를 기록합니다.
+
 ```shell
-sh ./scripts/evaluate.sh
+nohup sh ./scripts/evaluate.sh > evaluate.log 2>&1 &
 ```
 
-\*Note: 평가는 주로 \*\*적중률(Hit rate)\*\*과 \*\*반복률(Repeat rate)\**에 중점을 둡니다.*
+*Note: 평가는 주로 \*\*적중률(Hit rate)\*\*과 \*\*반복률(Repeat rate)\**에 중점을 둡니다. 
+  * 평가 결과는 **`evaluate.log`** 파일에 기록됩니다.*
+
+-----
+
+## 💡 백그라운드 작업 및 로그 확인 팁
+
+  * **실행 중인 작업 확인:** `jobs` 명령어를 사용하거나 `ps -ef | grep train.sh` 등을 통해 현재 백그라운드에서 실행 중인 프로세스를 확인할 수 있습니다.
+  * **로그 실시간 확인:** `tail -f [로그 파일명].log` 명령어를 사용하면 파일에 내용이 추가될 때마다 실시간으로 출력되는 로그를 볼 수 있습니다. (예: `tail -f train.log`)
 
 -----
 
