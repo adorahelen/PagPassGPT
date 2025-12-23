@@ -105,17 +105,109 @@ nohup sh ./scripts/evaluate.sh > evaluate.log 2>&1 &
   * **실행 중인 작업 확인:** `jobs` 명령어를 사용하거나 `ps -ef | grep train.sh` 등을 통해 현재 백그라운드에서 실행 중인 프로세스를 확인할 수 있습니다.
   * **로그 실시간 확인:** `tail -f [로그 파일명].log` 명령어를 사용하면 파일에 내용이 추가될 때마다 실시간으로 출력되는 로그를 볼 수 있습니다. (예: `tail -f train.log`)
 
------
+---
 
 ## 3 업데이트 기록
 
-  + 2024.12.25: 일부 버그 수정.
-  + 2024.12.20: pip 요구 사항 추가.
-  + 2024.12.19: 모든 코드 업데이트.
-      + 일부 버그 수정.
-      + 보다 정확한 환경 요구 사항 제공.
-      + 평가를 위한 새 파일 제공.
-      + 코드를 사용자 친화적으로 개선.
-      + `README.md` 업데이트.
-  + 2024.12.12: 논문 링크 업데이트 (arXiv에서 IEEE로).
-  + 2024.4.15: 최초 코드 업로드.
+* 2024.12.25: 일부 버그 수정.
+* 2024.12.20: pip 요구 사항 추가.
+* 2024.12.19: 모든 코드 업데이트.
+* 일부 버그 수정.
+* 보다 정확한 환경 요구 사항 제공.
+* 평가를 위한 새 파일 제공.
+* 코드를 사용자 친화적으로 개선.
+* `README.md` 업데이트.
+
+
+* 2024.12.12: 논문 링크 업데이트 (arXiv에서 IEEE로).
+* 2024.4.15: 최초 코드 업로드.
+
+---
+
+## 4 주요 연구 및 실험 결과
+
+### 4.1 핵심 요약
+
+1. **전이 학습의 효과**: RockYou 데이터셋에서 한국어 데이터셋으로의 전이 학습은 비밀번호 분포 학습에 효과적인 초기화를 제공합니다.
+2. **키보드 패턴 의존성**: 한국 사용자 비밀번호는 실제 한글 문자 자체보다 쿼티(QWERTY) 키보드 기반의 영문 입력 패턴에 훨씬 크게 의존합니다.
+3. **패턴 표현의 한계**: 단순한 PCFG(Probabilistic Context-Free Grammars) 확장은 한국어 패턴의 복잡성을 충분히 반영하기 어려우며, 결정론적 키보드 변환 규칙만으로는 사용자의 창의적인 변형을 모두 포괄하지 못합니다.
+
+### 4.2 참고 문헌
+
+* [1] Weir, M., et al. (2009). *Password cracking using probabilistic context-free grammars*. IEEE S&P.
+* [2] Hitaj, B., et al. (2019). ***PassGAN**: A deep learning approach for password guessing*. NDSS.
+* [3] Melicher, W., et al. (2016). *Fast, lean, and accurate: Modeling password guessability using neural networks*. USENIX Security.
+* [4] Pasquini, D., et al. (2021). *Improving password guessing via representation learning*. IEEE S&P.
+* [5] Nam, J., et al. (2023). *PassGPT: Password modeling and guessing using generative pre-trained transformer*. Computers & Security.
+* [6] Yu, S., et al. (2024). *PagPassGPT: Pattern-guided password guessing via generative pretrained transformer*.
+* [7] RockYou Leak Dataset. *RockYou password dataset*.
+
+---
+
+## 5 중간 발표 및 데이터 분석
+
+### 5.1 실험 개요
+
+* **대상 Repository**: [PagPassGPT](https://github.com/Suxyuuu/PagPassGPT) 기반 연구 수행.
+* **데이터셋 수집**:
+* 한국어 기반 데이터셋 수집 및 정제 (Unique 7,463,435개).
+* 정제 조건: 중복 제거, 길이 4~12자, Non-ASCII 제거.
+* 결과: 약 **461만 개**의 유효 데이터 확보.
+* 특이사항: 한글 문자가 직접 포함된 데이터는 극소수(약 10개)이며, 대부분 ASCII 문자로 구성됨.
+
+
+
+### 5.2 RockYou 단독 훈련 결과 ( Generation)
+
+| Metric | Normal Gen | DC-Gen |
+| --- | --- | --- |
+| **Hit Rate** | **0.94%** (0.0093) | **0.99%** (0.0099) |
+| **Repeat Rate** | 2.01e-06 | 1.00e-06 |
+
+---
+
+## 6 최종 실험 결과
+
+### 6.1 Fine-tuning (RockYou → 한국어 데이터셋)
+
+GPT-2 모델을 RockYou로 사전 학습(Pre-training)한 후, 한국어 데이터셋으로 미세 조정(Fine-tuning)을 진행했습니다.
+
+| Generation Count | Method | Hit Rate | Repeat Rate |
+| --- | --- | --- | --- |
+| **** | Normal | 2.39% | 7.10e-06 |
+|  | DC-Gen | 2.29% | 4.00e-06 |
+| **** | Normal | 14.76% | 2.07e-05 |
+|  | DC-Gen | 13.52% | 1.42e-05 |
+| **** | Normal | 37.44% | 5.17e-05 |
+
+> **분석:** 기존 한국어 데이터셋 단독 학습 대비 Hit Rate가 개선되었으며, DC-Gen 방식은 Hit Rate를 크게 높이지는 않으나 **Repeat Rate(중복 생성률)를 확실하게 감소**시키는 효과를 보였습니다.
+
+### 6.2 한국어 키보드 패턴 적용 시도
+
+[es-hangul](https://es-hangul.slash.page/) 라이브러리를 활용하여 영문 입력을 한글 타이핑 패턴으로 역산출하여 학습을 시도했습니다.
+
+* **대상 데이터**: 전체 461만 개 중 743,834개에서 한국어 패턴 추출 성공.
+* **패턴 예시** (`gksrmf1234a`):
+1. **Type 1 (한글 글자수 기준)**: `K2` (한글 2글자) + `N4` + `L1`
+2. **Type 2 (알파벳 입력 기준)**: `K6` (알파벳 6글자) + `N4` + `L1`
+
+
+
+#### 패턴 학습 결과 ( Gen 기준)
+
+| Pattern Type | Method | Hit Rate | Repeat Rate |
+| --- | --- | --- | --- |
+| **Pattern Type 1** | Normal | 13.28% | 3.03e-04 |
+|  | DC-Gen | 9.33% | 2.85e-05 |
+| **Pattern Type 2** | Normal | 13.45% | 3.43e-04 |
+|  | DC-Gen | 9.28% | 2.58e-05 |
+
+---
+
+## 7 향후 연구 과제
+
+* 음운 기반 서브워드(Subword) 모델링 도입.
+* 다국어 사전학습 모델과의 비교 분석.
+* 보다 유연한 한국어 특화 패턴 표현 방식 탐구.
+
+---
